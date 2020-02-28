@@ -13,6 +13,12 @@ def firstNonZeroDigit(x):
             return i
     return "error"
 
+def lastNonZeroDigit(x):
+    for i in x[::-1]:
+        if(i in [str(j) for j in range(1,10)]):
+            return i
+    return "error"
+
 def terminal_width():
     import fcntl, termios, struct
     th, tw, hp, wp = struct.unpack('HHHH',
@@ -20,7 +26,7 @@ def terminal_width():
         struct.pack('HHHH', 0, 0, 0, 0)))
     return tw
 
-def readDB(db, tableName, colNo):
+def readDB(db, tableName, colNo, mode="first"):
     try:
         connection = sqlite3.connect(db)
         cursor = connection.cursor()
@@ -49,7 +55,10 @@ def readDB(db, tableName, colNo):
 
                 if (type(length) == float):
                     #print(str(length)[0])
-                    leadingDigitCount[firstNonZeroDigit(str(length))] += 1
+                    if(mode=="last"):
+                        leadingDigitCount[lastNonZeroDigit(str(length))] += 1
+                    else:
+                        leadingDigitCount[firstNonZeroDigit(str(length))] += 1
                     usable += 1
 
             rowCount += 1
@@ -90,7 +99,7 @@ def compare(actual, expected):
 # for i in range(5,13):
 #     readDB("billboard-200.db", "acoustic_features", i)
 
-actual = readDB("billboard-200.db", "acoustic_features", 8)
+actual = readDB("billboard-200.db", "acoustic_features", 8, mode="last")
 actualSize = 0
 for i in range(1,10):
     actualSize += actual[str(i)]
